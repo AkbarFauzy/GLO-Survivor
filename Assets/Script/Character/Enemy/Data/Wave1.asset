@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed144c110f942a94a9c36b486b695001, type: 3}
+  m_Name: Wave1
+  m_EditorClassIdentifier: 
+  EnemyPrefab: {fileID: 5105288096441197642, guid: b78abab223a92ef4a8581cbd60fb2c98, type: 3}
+  PoolSize: 100
+  MaxSpawns: 50
+  SpawnInterval: 0.5
+  SpawnDuration: 1800
+  SpawnAt: 0
+  useTimerTrigger: 1
+  spawnAfterBossKilled: 0
