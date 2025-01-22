@@ -26,6 +26,7 @@ public class Movement : MonoBehaviour
     public bool wallJumped;
     public bool wallSlide;
     public bool isDashing;
+    public bool isOnPlatform;
 
     [Space]
 
@@ -33,6 +34,11 @@ public class Movement : MonoBehaviour
     private bool hasDashed;
 
     public int side = 1;
+
+    [Space]
+    [Header("Input Settings")]
+    public float doubleTapTime = 0.2f; // Max time allowed between taps
+    private float lastTapTime = -1f;   // Time of the last tap
 
     [Space]
     [Header("Polish")]
@@ -46,7 +52,7 @@ public class Movement : MonoBehaviour
     {
         coll = GetComponent<Collision>();
         rb = GetComponent<Rigidbody2D>();
-        anim = GetComponentInChildren<AnimationScript>();
+        anim = GetComponent<AnimationScript>();
     }
 
     // Update is called once per frame
@@ -79,6 +85,17 @@ public class Movement : MonoBehaviour
         {
             wallJumped = false;
             GetComponent<BetterJumping>().enabled = true;
+        }
+
+        if (isOnPlatform && Input.GetKeyDown(KeyCode.S))
+        {
+            float currentTime = Time.time;
+            if (currentTime - lastTapTime <= doubleTapTime)
+            {
+                DropThroughPlatform();
+            }
+
+            lastTapTime = currentTime;
         }
 
         if (wallGrab && !isDashing)
@@ -273,19 +290,19 @@ public class Movement : MonoBehaviour
         particle.Play();
     }
 
-    IEnumerator DisableMovement(float time)
+    private IEnumerator DisableMovement(float time)
     {
         canMove = false;
         yield return new WaitForSeconds(time);
         canMove = true;
     }
 
-    void RigidbodyDrag(float x)
+    private void RigidbodyDrag(float x)
     {
         rb.drag = x;
     }
 
-    void WallParticle(float vertical)
+    private void WallParticle(float vertical)
     {
         var main = slideParticle.main;
 
@@ -300,9 +317,55 @@ public class Movement : MonoBehaviour
         }
     }
 
-    int ParticleSide()
+    private int ParticleSide()
     {
         int particleSide = coll.onRightWall ? 1 : -1;
         return particleSide;
+    }
+
+    private Collider2D GetPlatformBelow()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f);
+        if (hit.collider != null && hit.collider.CompareTag("Platform"))
+        {
+            return hit.collider;
+        }
+        return null;
+    }
+
+    private void EnableCollision()
+    {
+        Collider2D playerCollider = GetComponent<Collider2D>();
+        Collider2D platformCollider = GetPlatformBelow();
+        if (platformCollider != null)
+        {
+            Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
+        }
+    }
+    private void DropThroughPlatform()
+    {
+        // Temporarily disable the player's collision with platforms
+        Collider2D playerCollider = GetComponent<Collider2D>();
+        Collider2D platformCollider = GetPlatformBelow();
+        if (platformCollider != null)
+        {
+            Physics2D.IgnoreCollision(playerCollider, platformCollider, true);
+            Invoke(nameof(EnableCollision), 0.5f); // Re-enable collision after 0.5 seconds
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            isOnPlatform = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            isOnPlatform = false;
+        }
     }
 }

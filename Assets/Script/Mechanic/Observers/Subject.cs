@@ -23,6 +23,13 @@ public class Subject : MonoBehaviour
             _observers.OnNotify(gameEvent, parameter);
         });
     }
+    protected void NotifyEvents<T1, T2>(Events gameEvent, T1 param1, T2 param2)
+    {
+        _observers.ForEach(observer =>
+        {
+            observer.OnNotify(gameEvent, param1, param2);
+        });
+    }
 
     protected void NotifyEvents(Events gameEvent)
     {

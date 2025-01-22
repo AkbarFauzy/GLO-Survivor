@@ -22,11 +22,6 @@ namespace Survivor.Character.Enemies {
 
         public float maxFallSpeed = -10f;
 
-        [SerializeField] private Transform _groundCheckPoint;
-        [SerializeField] private Vector2 _groundCheckSize = new Vector2(0.49f, 0.03f);
-
-        [SerializeField] private LayerMask _groundLayer;
-
         public GameObject damagePopupPrefab;
         private int popupPoolSize = 5;
         private Queue<GameObject> popupPool;
@@ -64,7 +59,7 @@ namespace Survivor.Character.Enemies {
 
             LastOnGroundTime -= Time.deltaTime;
 
-            if (!IsJumping)
+          /*  if (!IsJumping)
             {
                 //Ground Check
                 if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && !IsJumping) //checks if set box overlaps with ground
@@ -78,15 +73,15 @@ namespace Survivor.Character.Enemies {
             {
                 IsJumping = false;
             }
-
+*/
         }
 
         protected virtual void FixedUpdate()
         {
             if (_player == null) return;
 
-            MoveTowardPlayer();
-            LimitFallSpeed();
+/*            MoveTowardPlayer();*/
+            /*LimitFallSpeed();*/
         }
 
         public void TakeDamage(float damage)
@@ -163,7 +158,7 @@ namespace Survivor.Character.Enemies {
             }
         }
 
-        protected virtual void MoveTowardPlayer()
+/*        protected virtual void MoveTowardPlayer()
         {
             Vector2 direction = (_player.position - transform.position).normalized;
             if ((direction.x > 0 && !IsFacingRight) || (direction.x < 0 && IsFacingRight))
@@ -171,7 +166,7 @@ namespace Survivor.Character.Enemies {
                 Turn();
             }
             _rb.velocity = new Vector2(direction.x * Speed, _rb.velocity.y);
-        }
+        }*/
 
         void LimitFallSpeed()
         {
@@ -191,9 +186,13 @@ namespace Survivor.Character.Enemies {
         public void SetPlayer(Transform player)
         {
             _player = player;
+            EnemyAI ai = GetComponentInChildren<EnemyAI>();
+            if (ai != null) {
+                ai.target = player;
+            }
         }
 
-        protected void Jump()
+/*        protected void Jump()
         {
             IsJumping = true;
             LastOnGroundTime = 0;
@@ -213,27 +212,21 @@ namespace Survivor.Character.Enemies {
             {
                 _rb.AddForce(Vector2.up * verticalForce, ForceMode2D.Impulse);
             }
-        }
+        }*/
 
-        protected bool CanJump()
+/*        protected bool CanJump()
         {
             return LastOnGroundTime > 0 && !IsJumping;
         }
-
-        protected void Turn()
+*/
+/*        protected void Turn()
         {
             Vector3 scale = transform.localScale;
             scale.x *= -1;
             transform.localScale = scale;
 
             IsFacingRight = !IsFacingRight;
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireCube(_groundCheckPoint.position, _groundCheckSize);
-        }
+        }*/
     }
 }
 

@@ -12,7 +12,7 @@ namespace Survivor.Character.Enemies
         protected override void Update()
         {
             base.Update();
-            HandleJumping();
+/*            HandleJumping();*/
         }
 
         protected override void FixedUpdate()
@@ -20,7 +20,7 @@ namespace Survivor.Character.Enemies
 
         }
 
-        private void HandleJumping()
+/*        private void HandleJumping()
         {
             if (IsJumping) return;
             // Increment the timer
@@ -32,7 +32,7 @@ namespace Survivor.Character.Enemies
                 Jump();
                 _jumpTimer = 0f; // Reset the timer
             }
-        }
+        }*/
 
 /*        private void PerformJump()
         {

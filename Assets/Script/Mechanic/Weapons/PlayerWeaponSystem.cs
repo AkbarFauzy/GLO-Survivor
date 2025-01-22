@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Survivor.Mechanic.UI;
 using UnityEngine;
 
 namespace Survivor.Mechanic.Weapons
@@ -45,6 +46,7 @@ namespace Survivor.Mechanic.Weapons
                 // Level up the existing weapon
                 Debug.Log(existingWeapon);
                 existingWeapon.LevelUp();
+                NotifyWeaponChange(existingWeapon);
 
                 if (existingWeapon.IsMaxLevel) {
                     WeaponManager.Instance.RemoveMaxLevelWeapon(existingWeapon);
@@ -64,9 +66,16 @@ namespace Survivor.Mechanic.Weapons
 
                 // Add the weapon to the equipped list
                 equippedWeapons.Add(newWeapon);
+                NotifyWeaponChange(newWeapon);
                 Debug.Log($"Player Equip{newWeapon.WeaponData.name}");
             }
 
+        }
+
+        private void NotifyWeaponChange(Weapon weapon)
+        {
+            int index = equippedWeapons.IndexOf(weapon);
+            NotifyEvents<int, Weapon>(Events.OnPlayerEquipWaeapon, index, weapon);
         }
 
         public void UnequipWeapon(Weapon weapon)

@@ -32,7 +32,7 @@ namespace Survivor.Character.Enemies {
             {
                 if (distanceToPlayer > shootingRadius)
                 {
-                    MoveTowardPlayer();
+                 /*   MoveTowardPlayer();*/
                 }
                 else
                 {
@@ -41,14 +41,14 @@ namespace Survivor.Character.Enemies {
             }
         }
 
-        protected override void MoveTowardPlayer()
+/*        protected override void MoveTowardPlayer()
         {
             if (_player == null) return;
 
             Vector2 direction = (_player.position - transform.position).normalized;
             // Move only horizontally
             _rb.velocity = new Vector2(direction.x * Speed, _rb.velocity.y);
-        }
+        }*/
 
         private void HandleShooting()
         {

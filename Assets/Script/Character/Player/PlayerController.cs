@@ -25,9 +25,15 @@ namespace Survivor.Character.Player {
 		public float LastOnWallRightTime { get; private set; }
 		public float LastOnWallLeftTime { get; private set; }
 
+		public float doubleTapTime = 0.2f; // Max time allowed between taps
+		private float lastTapTime = -1f;   // Time of the last tap
+
+
 		//Jump
 		private bool _isJumpCut;
 		private bool _isJumpFalling;
+
+		private bool _isOnPlatform = false;
 
 		//Wall Jump
 		private float _wallJumpStartTime;
@@ -88,6 +94,21 @@ namespace Survivor.Character.Player {
 			{
 				OnJumpUpInput();
 			}
+
+			if (_isOnPlatform && Input.GetKeyDown(KeyCode.S))
+			{
+				float currentTime = Time.time;
+
+				// Check if this is the second tap within the allowed time frame
+				if (currentTime - lastTapTime <= doubleTapTime)
+				{
+					DropThroughPlatform();
+				}
+
+				// Update the time of the last tap
+				lastTapTime = currentTime;
+			}
+
 			#endregion
 
 			#region COLLISION CHECKS
@@ -217,6 +238,22 @@ namespace Survivor.Character.Player {
 				Slide();
 		}
 
+		private void OnCollisionEnter2D(Collision2D collision)
+		{
+			if (collision.gameObject.CompareTag("Platform"))
+			{
+				_isOnPlatform = true;
+			}
+		}
+
+		private void OnCollisionExit2D(Collision2D collision)
+		{
+			if (collision.gameObject.CompareTag("Platform"))
+			{
+				_isOnPlatform = false;
+			}
+		}
+
 		#region INPUT CALLBACKS
 		//Methods which whandle input detected in Update()
 		public void OnJumpInput()
@@ -229,6 +266,19 @@ namespace Survivor.Character.Player {
 			if (CanJumpCut() || CanWallJumpCut())
 				_isJumpCut = true;
 		}
+
+		private void DropThroughPlatform()
+		{
+			// Temporarily disable the player's collision with platforms
+			Collider2D playerCollider = GetComponent<Collider2D>();
+			Collider2D platformCollider = GetPlatformBelow();
+			if (platformCollider != null)
+			{
+				Physics2D.IgnoreCollision(playerCollider, platformCollider, true);
+				Invoke(nameof(EnableCollision), 0.5f); // Re-enable collision after 0.5 seconds
+			}
+		}
+
 		#endregion
 
 		#region GENERAL METHODS
@@ -236,6 +286,16 @@ namespace Survivor.Character.Player {
 		{
 			RB.gravityScale = scale;
 		}
+		private void EnableCollision()
+		{
+			Collider2D playerCollider = GetComponent<Collider2D>();
+			Collider2D platformCollider = GetPlatformBelow();
+			if (platformCollider != null)
+			{
+				Physics2D.IgnoreCollision(playerCollider, platformCollider, false);
+			}
+		}
+
 		#endregion
 
 		//MOVEMENT METHODS
@@ -398,6 +458,17 @@ namespace Survivor.Character.Player {
 			else
 				return false;
 		}
+
+		private Collider2D GetPlatformBelow()
+		{
+			RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1f);
+			if (hit.collider != null && hit.collider.CompareTag("Platform"))
+			{
+				return hit.collider;
+			}
+			return null;
+		}
+
 		#endregion
 
 

@@ -19,7 +19,7 @@ namespace Survivor.Character.Enemies {
 
             if ((direction.x > 0 && !IsFacingRight) || (direction.x < 0 && IsFacingRight))
             {
-                Turn();
+                /*Turn();*/
             }
             _rb.velocity = direction * Speed;
         }

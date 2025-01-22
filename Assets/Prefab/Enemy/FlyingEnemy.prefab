@@ -99,7 +99,7 @@ Animator:
   m_GameObject: {fileID: 6060582816228959543}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 6f462620e81c7be4f9c392f019bc7c72, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -203,7 +203,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   damagePopupPrefab: {fileID: 7715840030939848226, guid: 9b5432925ad177d45bb945b585f31093, type: 3}
-  poolSize: 5
 --- !u!1 &8082683520044504000
 GameObject:
   m_ObjectHideFlags: 0

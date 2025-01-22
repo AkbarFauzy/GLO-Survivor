@@ -1,3 +1,5 @@
+using Survivor.Mechanic.UI;
+using Survivor.Mechanic.Weapons;
 using Survivor.Character.Player;
 using UnityEngine.UI;
 using UnityEngine;
@@ -13,6 +15,7 @@ namespace Survivor.Manager.UI {
         [SerializeField] private TextMeshProUGUI _timeTxt;
         [SerializeField] private GameObject GameOverPanel;
         [SerializeField] private Button RetryButton;
+        [SerializeField] private WeaponSlotUI _weaponSLotUI;
 
         private float _timer;
 
@@ -32,6 +35,7 @@ namespace Survivor.Manager.UI {
         {
             Subscribe<Player>(Events.PlayerGainingExperience, OnPlayerGainingExperience);
             Subscribe<Player>(Events.OnPlayerLevelUp, OnPlayerLevelUp);
+            Subscribe<int, Weapon>(Events.OnPlayerEquipWaeapon, OnPlayerEquipWeapon);
             Subscribe(Events.GameOver, OnGameOver);
             RetryButton.onClick.AddListener(() => LevelLoader.Instance.LoadLevel(0));
         }
@@ -52,17 +56,21 @@ namespace Survivor.Manager.UI {
             Unsubscribe<Player>(Events.OnPlayerLevelUp, OnPlayerLevelUp);
         }
 
-        void OnPlayerGainingExperience(Player player) {
+        private void OnPlayerGainingExperience(Player player) {
             Debug.Log("Player Gaining Experience");
             _expBar.value = player.Experience;
         }
 
-        void OnPlayerLevelUp(Player player)
+        private void OnPlayerLevelUp(Player player)
         {
             Debug.Log("Player On LevelUp");
             _expBar.value = 0;
             _expBar.maxValue = player.GetCurrentLevelMaxEXP();
             _lvlTxt.text = "Lvl. " + player.Level;
+        }
+
+        private void OnPlayerEquipWeapon(int index, Weapon weapon) {
+            _weaponSLotUI.UpdateUI(index, weapon); 
         }
 
         void OnGameOver()
