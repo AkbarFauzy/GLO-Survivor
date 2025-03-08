@@ -9,7 +9,7 @@ public enum Events
     PlayerLevelUp,
     OnPlayerLevelUp,
     OnPlayerGetWeapon,
-    OnPlayerEquipWaeapon,
+    OnPlayerEquipWeapon,
     PlayerTakeDamage,
     PlayerGainingExperience,
     PlayerGetWeapon,

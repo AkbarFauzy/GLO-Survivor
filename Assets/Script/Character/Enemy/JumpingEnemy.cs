@@ -15,10 +15,6 @@ namespace Survivor.Character.Enemies
 /*            HandleJumping();*/
         }
 
-        protected override void FixedUpdate()
-        {
-
-        }
 
 /*        private void HandleJumping()
         {

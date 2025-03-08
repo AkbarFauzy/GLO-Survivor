@@ -1,5 +1,7 @@
-using System.Collections;
+using TwoBitMachines.FlareEngine.AI.BlackboardData;
 using System.Collections.Generic;
+using System.Collections;
+using Survivor.Mechanic.Loot;
 using Survivor.Mechanic;
 using UnityEngine;
 
@@ -11,6 +13,7 @@ namespace Survivor.Character.Enemies {
         public EnemySpawnerData spawnerSettings;
 
         public ExpOrbPool OrbPool;
+        public LootManager lootManager;
 
         public Vector2 SpawnPoint { get; private set; } = new Vector2();
         private List<GameObject> _enemyPool = new List<GameObject>();
@@ -19,12 +22,20 @@ namespace Survivor.Character.Enemies {
 
         [Header("Spawn Points")]
         public Transform[] spawnPoints;
+        public Pathfinding pathfinder;
+        public PathfindingBasic basicPathfinder;
 
         private void Start()
         {
             if (spawnerSettings == null)
             {
                 Debug.LogError("SpawnerSettings is not assigned!");
+                return;
+            }
+
+            if (lootManager == null)
+            {
+                Debug.LogError("LootManager is not assigned!");
                 return;
             }
 
@@ -38,21 +49,37 @@ namespace Survivor.Character.Enemies {
             Subscribe<Enemy>(Events.EnemyDied, ReturnEnemyToPool);
         }
 
+        private void OnDestroy()
+        {
+            Unsubscribe<Enemy>(Events.EnemyDied, ReturnEnemyToPool);
+        }
+
         public void Init()
         {
             for (int i = 0; i < spawnerSettings.PoolSize; i++)
             {
                 GameObject newEnemyObject = Instantiate(spawnerSettings.EnemyPrefab);
+                if (pathfinder != null)
+                {
+                    newEnemyObject.GetComponent<TargetPathfinding>().map = pathfinder;
+                }
+                else
+                {
+                    newEnemyObject.GetComponent<TargetPathfindingBasic>().map = basicPathfinder;
+                }
                 Enemy newEnemy = newEnemyObject.GetComponent<Enemy>();
                 newEnemy.AddObserver(this);
                 newEnemy.AddObserver(OrbPool);
-                newEnemy.SetPlayer(Player);
+                newEnemy.AddObserver(lootManager);
                 newEnemyObject.SetActive(false);
                 _enemyPool.Add(newEnemyObject);
             }
         }
+
         private void ReturnEnemyToPool(Enemy enemy)
         {
+            if (enemy == null) return;
+
             enemy.gameObject.SetActive(false);
             spawnCount--;
         }
@@ -109,10 +136,15 @@ namespace Survivor.Character.Enemies {
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
 
             GameObject enemy = GetEnemyFromPool();
+            if (enemy == null)
+            {
+                Debug.LogWarning("No available enemies in the pool.");
+                return;
+            }
+
             enemy.transform.position = spawnPoint.position;
             enemy.transform.rotation = spawnPoint.rotation;
             enemy.SetActive(true);
         }
-
     }
 }

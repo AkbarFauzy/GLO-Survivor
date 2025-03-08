@@ -8,17 +8,16 @@ namespace Survivor.Mechanic.Weapons {
         private Grenades weapon;
         private int burstCount = 1;
 
-        [Header("Throw Settings")]
         private float baseThrowForce = 1f;
         private float arcHeight = 2f;
         private float randomAngleRange = 15f;
-        private float cooldownInterval = 3f; 
+        private float cooldownInterval = 3f;
 
         private float burstInterval = 0.2f;
         private float burstTimer = 0f;
-        private float cooldownTimer = 0f; 
-        private int grenadesThrown = 0; 
-        private bool isBursting = false; 
+        private float cooldownTimer = 0f;
+        private int grenadesThrown = 0;
+        private bool isBursting = false;
         private bool isCooldown = false;
 
         public void Initialize<T>(T weapon) where T : Weapon
@@ -27,62 +26,73 @@ namespace Survivor.Mechanic.Weapons {
             {
                 this.weapon = grenades;
             }
-            else {
+            else
+            {
                 Debug.LogError($"Weapon of type {typeof(T)} is not supported for this behavior.");
             }
         }
 
         public void Fire()
         {
-            // Handle cooldown between bursts
             if (isCooldown)
             {
-                cooldownTimer += Time.deltaTime;
-                if (cooldownTimer >= cooldownInterval)
-                {
-                    isCooldown = false; // Cooldown finished, allow a new burst
-                    cooldownTimer = 0f;
-                }
+                HandleCooldown();
                 return;
             }
 
-            // If not currently bursting, start a new burst
             if (!isBursting)
             {
-                isBursting = true;
-                grenadesThrown = 0;
-                burstTimer = 0f; // Reset the burst timer
+                StartBurst();
             }
 
-            // Increment the burst timer
             burstTimer += Time.deltaTime;
 
-            // Check if it's time to throw the next grenade in the burst
             if (burstTimer >= burstInterval && grenadesThrown < burstCount)
             {
-                burstTimer = 0f; // Reset timer for the next grenade
-                GameObject grenade = weapon.Pool.GetProjectile();
-
-                if (grenade != null)
-                {
-                    Vector2 randomDirection = GetRandomThrowDirection();
-                    ThrowGrenade(grenade, randomDirection);
-                    grenadesThrown++;
-                }
-
-                // End the burst if all grenades have been thrown
-                if (grenadesThrown >= burstCount)
-                {
-                    isBursting = false;
-                    isCooldown = true; // Start cooldown after burst ends
-                }
+                burstTimer = 0f;
+                ThrowNextGrenade();
             }
         }
 
-        public void LevelUp(int newLevel)
+        public void LevelUp()
         {
-            burstCount = Mathf.Min(3, newLevel); // Cap burst count at 3 grenades
-            Debug.Log($"Grenade Weapon leveled up to {newLevel}: Now throws {burstCount} grenade(s) per burst.");
+            burstCount = Mathf.Min(3, weapon.Level); // Cap burst count at 3 grenades
+            Debug.Log($"Grenade Weapon leveled up to {weapon.Level}: Now throws {burstCount} grenade(s) per burst.");
+        }
+
+        private void HandleCooldown()
+        {
+            cooldownTimer += Time.deltaTime;
+            if (cooldownTimer >= cooldownInterval)
+            {
+                isCooldown = false;
+                cooldownTimer = 0f;
+            }
+        }
+
+        private void StartBurst()
+        {
+            isBursting = true;
+            grenadesThrown = 0;
+            burstTimer = 0f;
+        }
+
+        private void ThrowNextGrenade()
+        {
+            GameObject grenade = weapon.Pool.GetProjectile();
+
+            if (grenade != null)
+            {
+                Vector2 randomDirection = GetRandomThrowDirection();
+                ThrowGrenade(grenade, randomDirection);
+                grenadesThrown++;
+            }
+
+            if (grenadesThrown >= burstCount)
+            {
+                isBursting = false;
+                isCooldown = true;
+            }
         }
 
         private void ThrowGrenade(GameObject grenade, Vector3 direction)
@@ -94,7 +104,7 @@ namespace Survivor.Mechanic.Weapons {
 
             if (rb != null)
             {
-                rb.velocity = direction * weapon.GetRange(); // Use range as throw force
+                rb.velocity = direction * weapon.GetRange();
             }
         }
 

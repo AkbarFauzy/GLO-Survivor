@@ -56,9 +56,9 @@ namespace Survivor.Mechanic.Weapons
 
         }
 
-        public void LevelUp(int newLevel)
+        public void LevelUp()
         {
-            Debug.Log($"Weapon leveled up to {newLevel}: Adjusting ChainedElectricBehavior. " +
+            Debug.Log($"Weapon leveled up to {weapon.Level}: Adjusting ChainedElectricBehavior. " +
                       $"Current Damage: {weapon.GetDamage()}" +
                       $"Current Fire Rate: {weapon.GetFireRate()}" +
                       $"Current Range: {weapon.GetRange()}");

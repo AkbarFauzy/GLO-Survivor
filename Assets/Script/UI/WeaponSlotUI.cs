@@ -14,7 +14,7 @@ namespace Survivor.Mechanic.UI {
 
         public void UpdateUI(int index, Weapon weapon)
         {
-            _slotIcon[index].sprite = weapon.WeaponData.icon;
+            _slotIcon[index].sprite = weapon.WeaponData.Icon;
 
             if (weapon.IsMaxLevel) {
                 _slotLvl[index].text = $"Lvl.Max";

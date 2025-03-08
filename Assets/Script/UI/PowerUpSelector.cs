@@ -98,7 +98,7 @@ namespace Survivor.Mechanic.UI
 
                     // Check if the random weapon is already equipped
                     Weapon equippedWeapon = _playerWeaponSystem.equippedWeapons.Find(w =>
-                        w.WeaponData.weaponName == randomWeapon.WeaponData.weaponName);
+                        w.WeaponData.WeaponName == randomWeapon.WeaponData.WeaponName);
 
                     if (equippedWeapon != null)
                     {

@@ -1,101 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
+using TwoBitMachines.FlareEngine;
 using Survivor.Character.Enemies;
 using UnityEngine;
 
-namespace Survivor.Mechanic.Weapons {
+namespace Survivor.Mechanic.Weapons
+{
     public class Weapon : Observer, IWeapon
     {
-        public WeaponData WeaponData;
-        public int Level { get; private set; }
-        protected IWeaponBehavior _behavior;
-        [SerializeField] protected LayerMask enemyLayer;
-
+        [SerializeField] private WeaponData weaponData;
+        [SerializeField] private LayerMask enemyLayer;
         [SerializeField] private bool onFixedUpdate;
-        public ProjectilePool Pool { get; private set; }
 
-        public bool IsPoolExist { get => Pool != null; }
+        protected IWeaponBehavior _behavior;
+        private ProjectilePool _pool;
 
-        public bool IsMaxLevel { get => WeaponData.levels.Length == Level; }
+        public ProjectilePool Pool => _pool;
 
-        public virtual void InitializeBehavior() {
-            Debug.LogError("There is no Behavior Implemented");  
-        }
+        public WeaponData WeaponData => weaponData; 
+        public int Level { get; private set; }
+        public bool IsPoolExist => _pool != null;
+        public bool IsMaxLevel => weaponData.Levels.Length == Level;
 
         private void Start()
         {
             Level = 1;
 
-            // Initialize the weapon behavior based on the weapon data
-            if (WeaponData != null)
+            if (weaponData != null)
             {
-                if (WeaponData.hasProjectile)
+                if (weaponData.ProjectilePrefab != null)
                 {
-                    // Initialize a pooling system for projectiles
-                    GameObject poolObject = new GameObject($"{WeaponData.weaponName}_Pool");
-                    Pool = poolObject.AddComponent<ProjectilePool>();
-                    Pool.Initialize(this, WeaponData.projectilePrefab, 10); // Pool size of 10
-                    Subscribe<Enemy>(Events.EnemyHit, OnEnemyHit);
+                    GameObject projectilePrefab = Instantiate(weaponData.ProjectilePrefab);
+                    GetComponent<Firearm>().defaultProjectile.projectile = projectilePrefab.GetComponent<TwoBitMachines.FlareEngine.Projectile>().projectile;
                 }
 
                 InitializeBehavior();
             }
         }
 
-        private void Update()
+        public virtual void InitializeBehavior()
         {
-            if (!onFixedUpdate) return;
-
-            _behavior.Fire();
+            // Initialize weapon behavior
         }
 
-        private void FixedUpdate()
+        private void Update()
         {
-            if (onFixedUpdate) return;
-
-            _behavior.Fire();
+            if (onFixedUpdate && Time.fixedDeltaTime == Time.deltaTime)
+            {
+                _behavior?.Fire();
+            }
+            else if (!onFixedUpdate)
+            {
+                _behavior?.Fire();
+            }
         }
 
         public void LevelUp()
         {
-            if (Level < WeaponData.levels.Length)
+            if (Level < weaponData.Levels.Length)
             {
                 Level++;
-                if (_behavior != null) { 
-                    _behavior.LevelUp(Level);
-                }
+                _behavior?.LevelUp();
             }
         }
 
-        public float GetDamage()
-        {
-            return WeaponData.levels[Level - 1].damage;
-        }
-        public float GetFireRate()
-        {
-            return WeaponData.levels[Level - 1].fireRate;
-        }
-        public float GetRange()
-        {
-            return WeaponData.levels[Level-1].range;
-        }
-
-        public string GetNextLevelDescription()
-        {
-            return WeaponData.levels[Level].description;
-        }
-
-        private void OnEnemyHit(Enemy enemy) {
-            Debug.Log($"{WeaponData.name} Hit {enemy} for {GetDamage()} damage");
-            enemy.TakeDamage(GetDamage());
-        }
-
-        private void OnDrawGizmosSelected()
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, GetRange());
-        }
-
+        public float GetDamage() => weaponData.Levels[Level - 1].damage;
+        public float GetFireRate() => weaponData.Levels[Level - 1].fireRate;
+        public float GetRange() => weaponData.Levels[Level - 1].range;
+        public string GetNextLevelDescription() => weaponData.Levels[Level].description;
     }
 }
-

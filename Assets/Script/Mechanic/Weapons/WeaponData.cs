@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using TwoBitMachines.FlareEngine;
 using UnityEngine;
 
 namespace Survivor.Mechanic.Weapons {
     [CreateAssetMenu(fileName = "Weapon Data")]
     public class WeaponData : ScriptableObject
     {
-        public string weaponName;
-        public Sprite icon;
-        public bool hasProjectile;
-        public GameObject projectilePrefab;
-        public WeaponLevel[] levels;
+        [SerializeField] private string weaponName;
+        [SerializeField] private Sprite icon;
+        [SerializeField] private GameObject projectilePrefab;
+        [SerializeField] private WeaponLevel[] levels;
+
+        public string WeaponName => weaponName;
+        public Sprite Icon => icon;
+        public GameObject ProjectilePrefab => projectilePrefab;
+        public WeaponLevel[] Levels => levels;
     }
 
 

@@ -4,11 +4,28 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - ExpOrb
+  - Beam
+  - RotatedWall
+  - Edge2DDownOnly
+  - Edge2DUpOnly
+  - UIControl
+  - Block
+  - Friction
+  - NoClimb
+  - PushBlock
+  - SlowEnemy
+  - FireArm
+  - MeleeSword
+  - Ground
+  - Spike
+  - Avoid
+  - RailRight
+  - RailLeft
   - ExpOrbMagnet
-  - Enemy
-  - Bullet
   - Platform
+  - Enemy
+  - ExpOrb
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -16,19 +33,19 @@ TagManager:
   - 
   - Water
   - UI
-  - Ground
-  - Player
-  - ExpOrb
-  - Enemy
-  - Bullet
-  - GroundOnlyCollider
-  - EnemyBullet
-  - FlyingEnemy
+  - World
   - Platform
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
+  - Vehicle
+  - Hide
+  - GrabItem
+  - Front
+  - Map
+  - FlyingEnemy
+  - IgnoreFlyingEnemyPlatform
+  - ExpOrb
+  - ExpOrbMagnet
   - 
   - 
   - 
@@ -43,6 +60,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 3002075567
+    locked: 0
+  - name: Hide
+    uniqueID: 3558103599
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Front
+    uniqueID: 483194477
     locked: 0

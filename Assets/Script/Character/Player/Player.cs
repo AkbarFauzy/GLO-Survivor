@@ -7,7 +7,6 @@ using UnityEngine;
 
 
 namespace Survivor.Character.Player {
-    [RequireComponent(typeof(Animator))]
     public class Player : Observer
     {
         #region VARIABLE
@@ -15,42 +14,17 @@ namespace Survivor.Character.Player {
         private float _currentExperience;
         private float _maxExp;
         private int _baseExp = 10;
-        
-        private Animator _anim;
 
-        private float _currentHealth;
         private float _maxHealth = 100f;
-        [SerializeField] private Slider _hpBar;
 
         [SerializeField] private float _magnetRadius = 10f;
         [SerializeField] private CircleCollider2D _magnetTrigger;
-
-        [SerializeField] private float invincibilityDuration = 2.0f; // Time during which damage is ignored
-        [SerializeField] private float blinkInterval = 0.1f;         // Time between blinks
-        private float invincibilityTimer = 0f;                       // Tracks time remaining for invincibility
-        private float blinkTimer = 0f;                               // Tracks time for blinking
-        private bool isInvincible = false;                           // Flag to check if player is invincible
-        private SpriteRenderer spriteRenderer;
         #endregion
 
         public float Experience { get => _currentExperience; }
 
-        private void Awake()
-        {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            if (spriteRenderer == null)
-            {
-                Debug.LogError("SpriteRenderer not found! Attach a SpriteRenderer to this GameObject.");
-            }
-        }
-
         void Start()
         {
-            _hpBar.maxValue = _maxHealth;
-            _currentHealth = _maxHealth;
-            _hpBar.value = _currentHealth;
-
-            _anim = GetComponent<Animator>();
             SetMagnetRadius(_magnetRadius);
             AddObserver(this);
 
@@ -64,44 +38,6 @@ namespace Survivor.Character.Player {
         {
             if (_currentExperience >= _maxExp) {
                 LevelUp();
-            }
-
-            if (isInvincible)
-            {
-                // Manage invincibility duration
-                invincibilityTimer -= Time.deltaTime;
-                if (invincibilityTimer <= 0)
-                {
-                    isInvincible = false;
-                    spriteRenderer.enabled = true; // Ensure visibility is restored
-                    return;
-                }
-
-                // Manage blinking effect
-                blinkTimer -= Time.deltaTime;
-                if (blinkTimer <= 0)
-                {
-                    spriteRenderer.enabled = !spriteRenderer.enabled; // Toggle visibility
-                    blinkTimer = blinkInterval; // Reset blink timer
-                }
-            }
-
-        }
-
-        public void TakeDamage(float damage)
-        {
-            if (!isInvincible)
-            {
-                isInvincible = true;
-                invincibilityTimer = invincibilityDuration;
-                blinkTimer = 0f; // Start blinking immediately
-                _currentHealth -= damage;
-                _hpBar.value = _currentHealth;
-                Debug.Log(_currentHealth);
-                if (_currentHealth <= 0)
-                {
-                    NotifyEvents(Events.GameOver);
-                }
             }
         }
 
@@ -132,19 +68,9 @@ namespace Survivor.Character.Player {
             return _maxExp;
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-           
+        public void Died() {
+            NotifyEvents(Events.GameOver);
         }
-
-        private void OnTriggerEnter2D(Collider2D collision)
-        {
-            if (collision.gameObject.CompareTag("Enemy"))
-            {
-                TakeDamage(collision.gameObject.GetComponent<Enemy>().Damage);
-            }
-        }
-
     }
 }
 

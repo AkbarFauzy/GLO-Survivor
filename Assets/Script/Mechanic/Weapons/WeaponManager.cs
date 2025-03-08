@@ -38,7 +38,7 @@ namespace Survivor.Mechanic.Weapons
                 Weapon weaponComponent = prefab.GetComponent<Weapon>();
                 if (weaponComponent != null && weaponComponent.WeaponData != null)
                 {
-                    string weaponName = weaponComponent.WeaponData.weaponName;
+                    string weaponName = weaponComponent.WeaponData.WeaponName;
                     if (!_weaponDictionary.ContainsKey(weaponName))
                     {
                         _weaponDictionary.Add(weaponName, prefab);
@@ -80,11 +80,11 @@ namespace Survivor.Mechanic.Weapons
 
         public void RemoveMaxLevelWeapon(Weapon weapon)
         {
-            GameObject weaponPrefab = GetWeaponPrefab(weapon.WeaponData.weaponName);
+            GameObject weaponPrefab = GetWeaponPrefab(weapon.WeaponData.WeaponName);
             if (weaponPrefab != null && _availableWeapons.Contains(weaponPrefab))
             {
                 _availableWeapons.Remove(weaponPrefab);
-                Debug.Log($"{weapon.WeaponData.weaponName} reached max level and is removed from available weapons.", gameObject);
+                Debug.Log($"{weapon.WeaponData.WeaponName} reached max level and is removed from available weapons.", gameObject);
             }
         }
     }

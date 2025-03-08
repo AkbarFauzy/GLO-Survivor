@@ -8,7 +8,6 @@ namespace Survivor.Mechanic.Weapons
     public class PlayerWeaponSystem : Observer
     {
         public Transform weaponParent;
-
         public List<Weapon> equippedWeapons = new List<Weapon>();
 
         private void Start()
@@ -20,70 +19,85 @@ namespace Survivor.Mechanic.Weapons
             }
 
             GameObject defaultGun = WeaponManager.Instance.GetWeaponPrefab("Default Gun");
-
-            EquipWeapon(defaultGun);
-
+            if (defaultGun != null)
+            {
+                EquipWeapon(defaultGun);
+            }
             Subscribe<GameObject>(Events.OnPlayerGetWeapon, EquipWeapon);
         }
 
         public void EquipWeapon(GameObject weaponPrefab)
         {
-            // Get the Weapon component from the prefab
-            Weapon weaponPrefabComponent = weaponPrefab.GetComponent<Weapon>();
+            if (weaponPrefab == null)
+            {
+                Debug.LogError("Weapon prefab is null");
+                return;
+            }
 
+            Weapon weaponPrefabComponent = weaponPrefab.GetComponent<Weapon>();
             if (weaponPrefabComponent == null)
             {
                 Debug.LogError($"The weapon prefab {weaponPrefab.name} is missing a Weapon component!");
                 return;
             }
 
-            // Check if the weapon is already equipped
-            WeaponData weaponData = weaponPrefabComponent.WeaponData;
-            Weapon existingWeapon = equippedWeapons.Find(w => w.WeaponData == weaponData);
-
+            Weapon existingWeapon = equippedWeapons.Find(w => w.WeaponData == weaponPrefabComponent.WeaponData);
             if (existingWeapon != null)
             {
-                // Level up the existing weapon
-                Debug.Log(existingWeapon);
-                existingWeapon.LevelUp();
-                NotifyWeaponChange(existingWeapon);
-
-                if (existingWeapon.IsMaxLevel) {
-                    WeaponManager.Instance.RemoveMaxLevelWeapon(existingWeapon);
-                }
+                LevelUpExistingWeapon(existingWeapon);
             }
             else
             {
-                // Instantiate the weapon prefab
-                GameObject weaponObject = Instantiate(weaponPrefab, weaponParent);
-                Weapon newWeapon = weaponObject.GetComponent<Weapon>();
+                InstantiateAndEquipNewWeapon(weaponPrefab);
+            }
+        }
 
-                if (newWeapon == null)
-                {
-                    Debug.LogError($"Weapon prefab {weaponObject.name} is missing a Weapon component!");
-                    return;
-                }
+        private void LevelUpExistingWeapon(Weapon existingWeapon)
+        {
+            existingWeapon.LevelUp();
+            NotifyWeaponChange(existingWeapon);
 
-                // Add the weapon to the equipped list
-                equippedWeapons.Add(newWeapon);
-                NotifyWeaponChange(newWeapon);
-                Debug.Log($"Player Equip{newWeapon.WeaponData.name}");
+            if (existingWeapon.IsMaxLevel)
+            {
+                WeaponManager.Instance.RemoveMaxLevelWeapon(existingWeapon);
+            }
+        }
+
+        private void InstantiateAndEquipNewWeapon(GameObject weaponPrefab)
+        {
+            GameObject weaponObject = Instantiate(weaponPrefab, weaponParent);
+            Weapon newWeapon = weaponObject.GetComponent<Weapon>();
+
+            if (newWeapon == null)
+            {
+                Debug.LogError($"Weapon prefab {weaponObject.name} is missing a Weapon component!");
+                Destroy(weaponObject);
+                return;
             }
 
+            equippedWeapons.Add(newWeapon);
+            NotifyWeaponChange(newWeapon);
+            Debug.Log($"Player equipped {newWeapon.WeaponData.name}");
         }
 
         private void NotifyWeaponChange(Weapon weapon)
         {
             int index = equippedWeapons.IndexOf(weapon);
-            NotifyEvents<int, Weapon>(Events.OnPlayerEquipWaeapon, index, weapon);
+            NotifyEvents<int, Weapon>(Events.OnPlayerEquipWeapon, index, weapon);
         }
 
         public void UnequipWeapon(Weapon weapon)
         {
+            if (weapon == null)
+            {
+                Debug.LogError("Weapon to unequip is null");
+                return;
+            }
+
             if (equippedWeapons.Contains(weapon))
             {
                 equippedWeapons.Remove(weapon);
-                Destroy(weapon.gameObject); // Destroy the weapon prefab instance
+                Destroy(weapon.gameObject);
             }
         }
 
@@ -91,11 +105,9 @@ namespace Survivor.Mechanic.Weapons
         {
             if (equippedWeapons.Count <= 0) return;
 
-            // Visualize detection radius
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(equippedWeapons[0] != null ? equippedWeapons[0].transform.position : transform.position, 10f);
+            Gizmos.DrawWireSphere(equippedWeapons[0]?.transform.position ?? transform.position, 10f);
         }
-
     }
 }
 

@@ -18,9 +18,11 @@ namespace Survivor.Manager.UI {
         [SerializeField] private WeaponSlotUI _weaponSLotUI;
 
         private float _timer;
+        private readonly object _lock = new object();
 
         private void Awake()
         {
+
             if (Instance == null)
             {
                 Instance = this;
@@ -29,34 +31,38 @@ namespace Survivor.Manager.UI {
             {
                 Destroy(gameObject);
             }
+
         }
 
         private void Start()
         {
             Subscribe<Player>(Events.PlayerGainingExperience, OnPlayerGainingExperience);
             Subscribe<Player>(Events.OnPlayerLevelUp, OnPlayerLevelUp);
-            Subscribe<int, Weapon>(Events.OnPlayerEquipWaeapon, OnPlayerEquipWeapon);
+            Subscribe<int, Weapon>(Events.OnPlayerEquipWeapon, OnPlayerEquipWeapon);
             Subscribe(Events.GameOver, OnGameOver);
             RetryButton.onClick.AddListener(() => LevelLoader.Instance.LoadLevel(0));
         }
 
         private void FixedUpdate()
         {
+            _timer += Time.fixedDeltaTime;
+
             int minutes = Mathf.FloorToInt(_timer / 60f);
             int seconds = Mathf.FloorToInt(_timer % 60f);
 
-            _timer += Time.fixedDeltaTime;
             _timeTxt.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
-
 
         private void OnDestroy()
         {
             Unsubscribe<Player>(Events.PlayerGainingExperience, OnPlayerGainingExperience);
             Unsubscribe<Player>(Events.OnPlayerLevelUp, OnPlayerLevelUp);
+            Unsubscribe<int, Weapon>(Events.OnPlayerEquipWeapon, OnPlayerEquipWeapon);
+            Unsubscribe(Events.GameOver, OnGameOver);
         }
 
-        private void OnPlayerGainingExperience(Player player) {
+        private void OnPlayerGainingExperience(Player player)
+        {
             Debug.Log("Player Gaining Experience");
             _expBar.value = player.Experience;
         }
@@ -69,16 +75,16 @@ namespace Survivor.Manager.UI {
             _lvlTxt.text = "Lvl. " + player.Level;
         }
 
-        private void OnPlayerEquipWeapon(int index, Weapon weapon) {
-            _weaponSLotUI.UpdateUI(index, weapon); 
+        private void OnPlayerEquipWeapon(int index, Weapon weapon)
+        {
+            _weaponSLotUI.UpdateUI(index, weapon);
         }
 
-        void OnGameOver()
+        private void OnGameOver()
         {
             GameOverPanel.SetActive(true);
             Time.timeScale = 0;
         }
-
     }
 }
 

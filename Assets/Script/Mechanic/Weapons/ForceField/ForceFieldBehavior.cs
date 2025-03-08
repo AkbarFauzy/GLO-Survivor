@@ -10,17 +10,19 @@ namespace Survivor.Mechanic.Weapons
         private ForceField weapon;
         private float pulseForce;
         private float nextPulseTime;
+        private Transform weaponTransform;
 
         public void Initialize<T>(T weapon) where T : Weapon
         {
             if (weapon is ForceField forceField)
             {
                 this.weapon = forceField;
+                this.weaponTransform = weapon.gameObject.GetComponentInChildren<Transform>();
                 nextPulseTime = Time.time + weapon.GetFireRate();
             }
             else
             {
-                // Handle the case where the weapon is not a TeslaWeapon
+                // Handle the case where the weapon is not a ForceField
                 Debug.LogError($"Weapon of type {typeof(T)} is not supported for this behavior.");
             }
         }
@@ -34,10 +36,13 @@ namespace Survivor.Mechanic.Weapons
             }
         }
 
-        public void LevelUp(int newLevel)
+        public void LevelUp()
         {
-            weapon.gameObject.GetComponentInChildren<Transform>().localScale = new Vector3(weapon.GetRange(), weapon.GetRange(), 1f);
-            Debug.Log($"Weapon leveled up to {newLevel}: Adjusting ProjectileBehavior. " +
+            if (weaponTransform != null)
+            {
+                weaponTransform.localScale = new Vector3(weapon.GetRange(), weapon.GetRange(), 1f);
+            }
+            Debug.Log($"Weapon leveled up to {weapon.Level}: Adjusting ProjectileBehavior. " +
                 $"Current Damage: {weapon.GetDamage()}" +
                 $"Current Fire Rate: {weapon.GetFireRate()}" +
                 $"Current Range: {weapon.GetRange()}");
@@ -73,6 +78,11 @@ namespace Survivor.Mechanic.Weapons
 
             // Optional: Visualize the pulse effect
             Debug.Log("Pulse emitted!");
+        }
+
+        public void SetPulseForce(float force)
+        {
+            pulseForce = force;
         }
     }
 }

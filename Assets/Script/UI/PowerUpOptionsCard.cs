@@ -18,8 +18,8 @@ namespace Survivor.Mechanic.UI
         public void SetupWeapon(GameObject weapon) {
             _currentWeapon = weapon;
             Weapon weaponScript = _currentWeapon.GetComponent<Weapon>();
-            Icon.sprite = weaponScript.WeaponData.icon;
-            ItemNameTxt.text = weaponScript.WeaponData.weaponName +" Lvl." + (weaponScript.Level + 1);
+            Icon.sprite = weaponScript.WeaponData.Icon;
+            ItemNameTxt.text = weaponScript.WeaponData.WeaponName +" Lvl." + (weaponScript.Level + 1);
             ItemDescriptionTxt.text = weaponScript.GetNextLevelDescription();
         }
 

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Survivor.Character.Enemies {
     public class FlyingEnemy : Enemy
     {
-        protected override void FixedUpdate()
+/*        protected override void FixedUpdate()
         {
             if (_player == null) return;
 
@@ -19,10 +19,10 @@ namespace Survivor.Character.Enemies {
 
             if ((direction.x > 0 && !IsFacingRight) || (direction.x < 0 && IsFacingRight))
             {
-                /*Turn();*/
+                *//*Turn();*//*
             }
             _rb.velocity = direction * Speed;
-        }
+        }*/
     }
 }
 

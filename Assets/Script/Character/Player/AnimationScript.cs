@@ -20,13 +20,13 @@ public class AnimationScript : MonoBehaviour
 
     void Update()
     {
-        anim.SetBool("onGround", coll.onGround);
+/*        anim.SetBool("onGround", coll.onGround);
         anim.SetBool("onWall", coll.onWall);
         anim.SetBool("onRightWall", coll.onRightWall);
         anim.SetBool("wallGrab", move.wallGrab);
         anim.SetBool("wallSlide", move.wallSlide);
         anim.SetBool("canMove", move.canMove);
-        anim.SetBool("isDashing", move.isDashing);
+        anim.SetBool("isDashing", move.isDashing);*/
 
     }
 

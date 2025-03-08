@@ -17,6 +17,6 @@ MonoBehaviour:
   MaxSpawns: 20
   SpawnInterval: 1
   SpawnDuration: 1800
-  SpawnAt: 60
+  SpawnAt: 0
   useTimerTrigger: 1
   spawnAfterBossKilled: 0
